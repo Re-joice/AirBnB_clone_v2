@@ -60,16 +60,19 @@ class FileStorage:
             from models.base_model import BaseModel
             from models.state import State
             from models.place import Place
+            from models.city import City
 
             classes = {
                 "BaseModel": BaseModel,
                 "State": State,
-                "Place": Place
+                "Place": Place,
+                "City": City
             }
 
             for key, value in objects.items():
                 class_name = value["__class__"]
                 if class_name in classes:
                     FileStorage.__objects[key] = classes[class_name](**value)
+
         except FileNotFoundError:
             pass
