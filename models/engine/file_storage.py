@@ -9,9 +9,16 @@ class FileStorage:
     __file_path = "file.json"
     __objects = {}
 
-    def all(self):
-        """Return all objects."""
-        return FileStorage.__objects
+    def all(self, cls=None):
+        """Return all objects, optionally filtered by class."""
+        if cls is None:
+            return FileStorage.__objects
+
+        return {
+            key: obj
+            for key, obj in FileStorage.__objects.items()
+            if isinstance(obj, cls)
+        }
 
     def new(self, obj):
         """Add an object to storage."""
@@ -30,6 +37,19 @@ class FileStorage:
 
         with open(FileStorage.__file_path, "w") as file:
             json.dump(objects_dict, file)
+
+    def delete(self, obj=None):
+        """Delete an object from storage."""
+        if obj is None:
+            return
+
+        key = "{}.{}".format(
+            obj.__class__.__name__,
+            obj.id
+        )
+
+        if key in FileStorage.__objects:
+            del FileStorage.__objects[key]
 
     def reload(self):
         """Deserialize the JSON file."""
