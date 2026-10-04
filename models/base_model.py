@@ -18,10 +18,15 @@ class BaseModel:
                 self.created_at = datetime.fromisoformat(
                     kwargs["created_at"]
                 )
+
             if "updated_at" in kwargs:
                 self.updated_at = datetime.fromisoformat(
                     kwargs["updated_at"]
                 )
+
+            if "id" not in kwargs:
+                self.id = str(uuid.uuid4())
+
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
@@ -30,7 +35,9 @@ class BaseModel:
     def __str__(self):
         """Return string representation."""
         return "[{}] ({}) {}".format(
-            self.__class__.__name__, self.id, self.__dict__
+            self.__class__.__name__,
+            self.id,
+            self.__dict__
         )
 
     def save(self):

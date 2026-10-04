@@ -5,7 +5,9 @@ import shlex
 
 from models import storage
 from models.base_model import BaseModel
+from models.user import User
 from models.state import State
+from models.city import City
 from models.place import Place
 
 
@@ -16,7 +18,9 @@ class HBNBCommand(cmd.Cmd):
 
     classes = {
         "BaseModel": BaseModel,
+        "User": User,
         "State": State,
+        "City": City,
         "Place": Place
     }
 
@@ -65,7 +69,6 @@ class HBNBCommand(cmd.Cmd):
             if not key or not value:
                 continue
 
-            # String: must start and end with double quotes.
             if value.startswith('"'):
                 if not value.endswith('"') or len(value) < 2:
                     continue
@@ -75,14 +78,12 @@ class HBNBCommand(cmd.Cmd):
                 value = value.replace("_", " ")
                 params[key] = value
 
-            # Float: contains a decimal point.
             elif "." in value:
                 try:
                     params[key] = float(value)
                 except ValueError:
                     continue
 
-            # Integer: default numeric case.
             else:
                 try:
                     params[key] = int(value)
@@ -92,6 +93,44 @@ class HBNBCommand(cmd.Cmd):
         instance = self.classes[class_name](**params)
         instance.save()
         print(instance.id)
+
+    def do_show(self, arg):
+        """Show an object."""
+        args = arg.split()
+
+        if not args:
+            print("** class name missing **")
+            return
+
+        if args[0] not in self.classes:
+            print("** class doesn't exist **")
+            return
+
+        if len(args) < 2:
+            print("** instance id missing **")
+            return
+
+        key = "{}.{}".format(args[0], args[1])
+        obj = storage.all().get(key)
+
+        if obj is None:
+            print("** no instance found **")
+            return
+
+        print(obj)
+
+    def do_all(self, arg):
+        """Show all objects or all objects of a class."""
+        if arg and arg not in self.classes:
+            print("** class doesn't exist **")
+            return
+
+        if arg:
+            objects = storage.all(self.classes[arg])
+        else:
+            objects = storage.all()
+
+        print([str(obj) for obj in objects.values()])
 
 
 if __name__ == "__main__":

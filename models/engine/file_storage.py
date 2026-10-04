@@ -58,19 +58,22 @@ class FileStorage:
                 objects = json.load(file)
 
             from models.base_model import BaseModel
+            from models.user import User
             from models.state import State
-            from models.place import Place
             from models.city import City
+            from models.place import Place
 
             classes = {
                 "BaseModel": BaseModel,
+                "User": User,
                 "State": State,
-                "Place": Place,
-                "City": City
+                "City": City,
+                "Place": Place
             }
 
             for key, value in objects.items():
                 class_name = value["__class__"]
+
                 if class_name in classes:
                     FileStorage.__objects[key] = classes[class_name](**value)
 
