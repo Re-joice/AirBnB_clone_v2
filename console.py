@@ -119,18 +119,98 @@ class HBNBCommand(cmd.Cmd):
 
         print(obj)
 
-    def do_all(self, arg):
-        """Show all objects or all objects of a class."""
-        if arg and arg not in self.classes:
+    def do_destroy(self, arg):
+        """Delete an object."""
+        args = arg.split()
+
+        if not args:
+            print("** class name missing **")
+            return
+
+        if args[0] not in self.classes:
             print("** class doesn't exist **")
             return
 
-        if arg:
-            objects = storage.all(self.classes[arg])
-        else:
-            objects = storage.all()
+        if len(args) < 2:
+            print("** instance id missing **")
+            return
+
+        key = "{}.{}".format(args[0], args[1])
+        obj = storage.all().get(key)
+
+        if obj is None:
+            print("** no instance found **")
+            return
+
+        storage.delete(obj)
+        storage.save()
+
+    def do_all(self, arg):
+        """Show all objects or all objects of a class."""
+        args = arg.split()
+
+        if args and args[0] not in self.classes:
+            print("** class doesn't exist **")
+            return
+
+        objects = storage.all()
+
+        if args:
+            class_name = args[0]
+            objects = storage.all(self.classes[class_name])
 
         print([str(obj) for obj in objects.values()])
+
+    def do_update(self, arg):
+        """Update an object."""
+        args = shlex.split(arg)
+
+        if not args:
+            print("** class name missing **")
+            return
+
+        if args[0] not in self.classes:
+            print("** class doesn't exist **")
+            return
+
+        if len(args) < 2:
+            print("** instance id missing **")
+            return
+
+        key = "{}.{}".format(args[0], args[1])
+        obj = storage.all().get(key)
+
+        if obj is None:
+            print("** no instance found **")
+            return
+
+        if len(args) < 3:
+            print("** attribute name missing **")
+            return
+
+        if len(args) < 4:
+            print("** value missing **")
+            return
+
+        attribute = args[2]
+        value = args[3]
+
+        if attribute in ("id", "created_at", "updated_at"):
+            return
+
+        if "." in value:
+            try:
+                value = float(value)
+            except ValueError:
+                pass
+        else:
+            try:
+                value = int(value)
+            except ValueError:
+                pass
+
+        setattr(obj, attribute, value)
+        obj.save()
 
 
 if __name__ == "__main__":
