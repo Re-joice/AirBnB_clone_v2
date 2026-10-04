@@ -15,13 +15,15 @@ class BaseModel:
                     setattr(self, key, value)
 
             if "created_at" in kwargs:
-                self.created_at = datetime.fromisoformat(
-                    kwargs["created_at"]
+                self.created_at = datetime.strptime(
+                    kwargs["created_at"],
+                    "%Y-%m-%dT%H:%M:%S.%f"
                 )
 
             if "updated_at" in kwargs:
-                self.updated_at = datetime.fromisoformat(
-                    kwargs["updated_at"]
+                self.updated_at = datetime.strptime(
+                    kwargs["updated_at"],
+                    "%Y-%m-%dT%H:%M:%S.%f"
                 )
 
             if "id" not in kwargs:
