@@ -91,8 +91,13 @@ class HBNBCommand(cmd.Cmd):
                     continue
 
         instance = self.classes[class_name](**params)
-        instance.save()
+
         print(instance.id)
+
+        try:
+            instance.save()
+        except Exception:
+            pass
 
     def do_show(self, arg):
         """Show an object."""
