@@ -1,27 +1,17 @@
+
 #!/usr/bin/python3
+"""Review model."""
 
 from sqlalchemy import Column, String, ForeignKey
 
-from models.base_model import BaseModel
+from models.base_model import BaseModel, Base
 
 
-class Review(BaseModel):
-    """Review model."""
+class Review(BaseModel, Base):
+    """Representation of a review."""
 
     __tablename__ = "reviews"
 
-    place_id = Column(
-        String(60),
-        ForeignKey("places.id"),
-        nullable=False
-    )
-    user_id = Column(
-        String(60),
-        ForeignKey("users.id"),
-        nullable=False
-    )
     text = Column(String(1024), nullable=False)
-
-    def __init__(self, *args, **kwargs):
-        """Initialize a Review."""
-        super().__init__(*args, **kwargs)
+    place_id = Column(String(60), ForeignKey("places.id"), nullable=False)
+    user_id = Column(String(60), ForeignKey("users.id"), nullable=False)
