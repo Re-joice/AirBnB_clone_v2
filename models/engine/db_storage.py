@@ -1,17 +1,18 @@
 #!/usr/bin/python3
+"""Database storage engine."""
 
 import os
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm import scoped_session
+from sqlalchemy.orm import sessionmaker, scoped_session
 
-from models.base_model import BaseModel
+from models.base_model import Base, BaseModel
 from models.user import User
 from models.state import State
 from models.city import City
 from models.place import Place
 from models.review import Review
+from models.amenity import Amenity
 
 
 class DBStorage:
@@ -46,7 +47,8 @@ class DBStorage:
             "State": State,
             "City": City,
             "Place": Place,
-            "Review": Review
+            "Review": Review,
+            "Amenity": Amenity
         }
 
         if cls is not None:
@@ -85,7 +87,7 @@ class DBStorage:
 
     def reload(self):
         """Create tables and initialize the database session."""
-        BaseModel.metadata.create_all(self.__engine)
+        Base.metadata.create_all(self.__engine)
 
         session_factory = sessionmaker(
             bind=self.__engine,

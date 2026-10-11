@@ -1,15 +1,36 @@
-
 #!/usr/bin/python3
 """Place model."""
 
 import models
-from sqlalchemy import Column, String, Integer, Float, ForeignKey
+from sqlalchemy import (
+    Column, String, Integer, Float, ForeignKey, Table
+)
 from sqlalchemy.orm import relationship
 
-from models.base_model import BaseModel
+from models.base_model import BaseModel, Base
 
 
-class Place(BaseModel):
+place_amenity = Table(
+    "place_amenity",
+    Base.metadata,
+    Column(
+        "place_id",
+        String(60),
+        ForeignKey("places.id"),
+        primary_key=True,
+        nullable=False
+    ),
+    Column(
+        "amenity_id",
+        String(60),
+        ForeignKey("amenities.id"),
+        primary_key=True,
+        nullable=False
+    )
+)
+
+
+class Place(BaseModel, Base):
     """Representation of a place."""
 
     __tablename__ = "places"
@@ -39,6 +60,12 @@ class Place(BaseModel):
             backref="place",
             cascade="all, delete, delete-orphan"
         )
+
+        amenities = relationship(
+            "Amenity",
+            secondary=place_amenity,
+            viewonly=False
+        )
     else:
         @property
         def reviews(self):
@@ -51,6 +78,33 @@ class Place(BaseModel):
                 review for review in all_reviews.values()
                 if review.place_id == self.id
             ]
+
+        @property
+        def amenities(self):
+            """Return amenities associated with this place."""
+            from models import storage
+            from models.amenity import Amenity
+
+            all_amenities = storage.all(Amenity)
+            amenity_list = []
+
+            for amenity_id in getattr(self, "amenity_ids", []):
+                key = "Amenity.{}".format(amenity_id)
+                amenity = all_amenities.get(key)
+                if amenity is not None:
+                    amenity_list.append(amenity)
+
+            return amenity_list
+
+        @amenities.setter
+        def amenities(self, obj):
+            """Append an Amenity ID when given an Amenity object."""
+            from models.amenity import Amenity
+
+            if isinstance(obj, Amenity):
+                if not hasattr(self, "amenity_ids"):
+                    self.amenity_ids = []
+                self.amenity_ids.append(obj.id)
 
     def __init__(self, *args, **kwargs):
         """Initialize a Place."""
