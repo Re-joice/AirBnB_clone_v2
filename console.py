@@ -46,12 +46,11 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, args):
-        """ Create an object of any class"""
+        """ Create an object of any class with parameters """
         if not args:
             print("** class name missing **")
             return
         
-        # Parse arguments (class name + key=value pairs)
         args_list = args.split()
         class_name = args_list[0]
 
@@ -65,7 +64,6 @@ class HBNBCommand(cmd.Cmd):
         for param in args_list[1:]:
             if '=' in param:
                 key, value = param.split('=', 1)
-                # Remove surrounding quotes if present
                 if value.startswith('"') and value.endswith('"'):
                     value = value[1:-1].replace('_', ' ').replace('\\"', '"')
                 elif '.' in value:
@@ -165,7 +163,6 @@ class HBNBCommand(cmd.Cmd):
         attr_name = args_list[2]
         attr_value = args_list[3].strip('"')
 
-        # Type casting if necessary
         if hasattr(obj, attr_name):
             attr_type = type(getattr(obj, attr_name))
             try:
