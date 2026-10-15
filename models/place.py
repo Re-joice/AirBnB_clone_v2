@@ -55,8 +55,6 @@ class Place(BaseModel, Base):
     )
 
     if getenv('HBNB_TYPE_STORAGE') != 'db':
-        amenity_ids = []
-
         @property
         def reviews(self):
             """Getter attribute for reviews in FileStorage"""
