@@ -1,17 +1,20 @@
 #!/usr/bin/python3
-"""Amenity model."""
-
-from sqlalchemy import Column, String
+""" This module defines the Amenity class. """
 from models.base_model import BaseModel, Base
+from sqlalchemy import Column, String
+from sqlalchemy.orm import relationship
+from os import getenv
 
 
 class Amenity(BaseModel, Base):
-    """Representation of an amenity."""
-
-    __tablename__ = "amenities"
+    """ Representation of Amenity """
+    __tablename__ = 'amenities'
 
     name = Column(String(128), nullable=False)
 
-    def __init__(self, *args, **kwargs):
-        """Initialize an Amenity instance."""
-        super().__init__(*args, **kwargs)
+    if getenv('HBNB_TYPE_STORAGE') == 'db':
+        place_amenities = relationship(
+            "Place",
+            secondary="place_amenity",
+            back_populates="amenities"
+        )
