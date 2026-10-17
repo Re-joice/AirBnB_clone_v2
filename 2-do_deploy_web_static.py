@@ -4,7 +4,8 @@
 import os
 from fabric.api import env, put, run
 
-env.hosts = ['<IP web-01>', '<IP web-02>']
+# Replace these placeholders with your actual ALX web-server IPs.
+env.hosts = ['WEB01_IP', 'WEB02_IP']
 
 
 def do_deploy(archive_path):
